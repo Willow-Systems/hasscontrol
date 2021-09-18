@@ -265,17 +265,18 @@ module Hass {
   }
 
   function onToggleEntityStateCompleted(error, data) {
+
     if (error != null) {
       App.getApp().viewController.removeLoaderImmediate();
       App.getApp().viewController.showError(error);
       return;
     }
 
-    if (data[:context][:state] != null) {
+    if (data[:body][0]["state"] != null) {
       var entity = getEntity(data[:context][:entityId]);
 
       if (entity != null) {
-        var newState = data[:context][:state];
+        var newState = data[:body][0]["state"];
 
         if (entity.getType() == Entity.TYPE_SCRIPT) {
           newState = Entity.STATE_OFF;
@@ -325,10 +326,10 @@ module Hass {
     } else {
       if (currentState == Entity.STATE_ON) {
         action = Client.ENTITY_ACTION_TURN_OFF;
-        loadingText = "Turning off";
+        loadingText = "Toggling\n" + entity.getName();
       } else if (currentState == Entity.STATE_OFF) {
         action = Client.ENTITY_ACTION_TURN_ON;
-        loadingText = "Turning on";
+        loadingText = "Toggling\n" + entity.getName();
       }
     }
 
@@ -353,7 +354,9 @@ module Hass {
 
     App.getApp().viewController.showLoader(loadingText);
 
-    client.setEntityState(entityId, entityType, action, Utils.method(Hass, :onToggleEntityStateCompleted));
+    //: Testing my new version
+    //client.setEntityState(entityId, entityType, action, Utils.method(Hass, :onToggleEntityStateCompleted));
+    client.toggleEntityState(entityId, entityType, Utils.method(Hass, :onToggleEntityStateCompleted));
   }
 }
 

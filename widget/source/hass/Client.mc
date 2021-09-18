@@ -171,5 +171,28 @@ module Hass {
             );
         }
 
+        function toggleEntityState(entityId, entityType, callback) {
+            if (validateSettings(callback) != null) {
+                return;
+            }
+
+            var newState = "unknown";
+
+            makeAuthenticatedWebRequest(
+                _baseUrl + "/api/services/" + entityType + "/toggle",
+                {
+                    "entity_id" => entityId
+                },
+                {
+                    :method => Comm.HTTP_REQUEST_METHOD_POST,
+                    :context => {
+                        :entityId => entityId,
+                        :state => newState,
+                    }
+                },
+                callback
+            );
+        }
+
     }
 }
